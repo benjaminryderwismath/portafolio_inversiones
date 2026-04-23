@@ -37,3 +37,4 @@ const getPrecio = async (simbolo, tipo) => {
 };
 
 module.exports = { getPrecio };
+
