@@ -1,6 +1,5 @@
 
 
-
 const activosService = require("../services/activos.service");
 
 
