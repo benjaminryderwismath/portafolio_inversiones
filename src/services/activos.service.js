@@ -20,6 +20,8 @@ const createActivos = async (data) => {
         return result.rows[0];
 };
 
+
+
 module.exports = {
     getActivos,
     createActivos,

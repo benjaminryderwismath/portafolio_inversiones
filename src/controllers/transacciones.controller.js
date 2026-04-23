@@ -1,5 +1,6 @@
 
 const transaccionesService = require("../services/transacciones.service");
+const AppError = require("../utils/AppError");
 
 const getTransacciones = async(req, res, next) => {
     try {
@@ -29,5 +30,20 @@ const createTransaccion = async(req, res, next) => {
     }
 };
 
+const deleteTransaccion = async(req, res, next) => {
+    try {
+        const transacciones = await transaccionesService.deleteTransaccion(
+            req.params.txId,
+            req.params.id
+        );
 
-module.exports = { getTransacciones, createTransaccion };
+        if(!transacciones) {
+            throw new AppError("Transaccion no encontrada", 404)
+        }
+        res.json({message: "Transaccion eliminada"})
+    } catch (error) {
+        next (error)
+    }
+};
+
+module.exports = { getTransacciones, createTransaccion, deleteTransaccion };

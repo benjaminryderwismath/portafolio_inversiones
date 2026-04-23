@@ -50,4 +50,24 @@ const createTransaccion = async(data, portafolioId) => {
     }
 };
 
-module.exports = { getTransacciones, createTransaccion };
+const deleteTransaccion = async(id, portafolioId) => {
+    const client = await pool.connect();
+
+    try{
+        await client.query("BEGIN");
+
+        const result = await client.query(
+            `DELETE FROM transacciones WHERE id = $1 AND portafolio_id = $2 RETURNING *`,
+            [id, portafolioId]
+        )
+        await client.query("COMMIT");
+        return result.rows[0];
+    } catch (error) {
+        await client.query("ROLLBACK"); 
+        throw error;
+    } finally {
+        client.release();
+    }
+};
+
+module.exports = { getTransacciones, createTransaccion, deleteTransaccion };
