@@ -56,10 +56,29 @@ const deleteTransaccion = async(id, portafolioId) => {
     try{
         await client.query("BEGIN");
 
+        const transaccion = await client.query(
+            `SELECT * FROM transacciones WHERE id = $1 AND portafolio_id = $2`,
+            [id, portafolioId]
+        );
+
+        if (transaccion.rows.length === 0) {
+            await client.query("ROLLBACK");
+            return null;
+        }
+
+        const { activo_id, tipo, cantidad } = transaccion.rows[0];
+
         const result = await client.query(
             `DELETE FROM transacciones WHERE id = $1 AND portafolio_id = $2 RETURNING *`,
             [id, portafolioId]
-        )
+        );
+
+        const signoReversion = tipo === "compra" ? "-" : "+";
+        await client.query(
+            `UPDATE portafolio_activos SET cantidad = cantidad ${signoReversion} $1 WHERE portafolio_id = $2 AND activo_id = $3`,
+            [cantidad, portafolioId, activo_id]
+        );
+
         await client.query("COMMIT");
         return result.rows[0];
     } catch (error) {

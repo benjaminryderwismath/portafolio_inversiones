@@ -7,13 +7,6 @@ const getPortafolios = async(req, res, next) => {
 
         const userId = req.user.id;
 
-        const filters = {
-            tipo: req.query.tipo,
-            cantidad: req.query.cantidad,
-            precio: req.query.precio,
-            fecha: req.query.fecha
-        };
-
         const data = await portafoliosService.getPortafolios(userId);
 
         res.json(data);

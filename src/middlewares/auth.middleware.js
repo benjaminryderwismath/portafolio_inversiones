@@ -6,7 +6,7 @@ const verifyToken = (req, res, next) => {
     const header = req.headers.authorization;
 
     if (! header) {
-        return next (new AppError("Token requerido", 400));
+        return next (new AppError("Token requerido", 401));
     }
 
     const token = header.split(" ")[1];

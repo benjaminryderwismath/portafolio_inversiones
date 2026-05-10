@@ -5,6 +5,7 @@ const router = express.Router();
 const verifyToken = require("../middlewares/auth.middleware");
 
 const validateSchema = require("../middlewares/validate");
+const validateId = require("../middlewares/validateId");
 
 const {
     getAlertas,
@@ -12,7 +13,7 @@ const {
     updateAlerta,
     deleteAlerta
 } = require("../controllers/alerta.controller");
-const { alertaSchema } = require("../validators/alertas.validator");
+const { alertaSchema, updateAlertaSchema } = require("../validators/alertas.validator");
 
 router.use(verifyToken);
 
@@ -20,8 +21,8 @@ router.get("/", getAlertas);
 
 router.post("/", validateSchema (alertaSchema), createAlerta);
 
-router.put("/:id",updateAlerta);
+router.put("/:id", validateId, validateSchema(updateAlertaSchema), updateAlerta);
 
-router.delete("/:id", deleteAlerta);
+router.delete("/:id", validateId, deleteAlerta);
 
 module.exports = router;

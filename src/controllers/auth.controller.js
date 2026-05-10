@@ -1,5 +1,5 @@
 
-const authSerivice = require("../services/auth.service");
+const authService = require("../services/auth.service");
 const AppError = require("../utils/AppError");
 
 const register = async(req, res, next) => {
@@ -10,7 +10,7 @@ const register = async(req, res, next) => {
             throw new AppError("nombre, email y password requeridos", 400);
         }
 
-        const user = await authSerivice.register(nombre, email, password);
+        const user = await authService.register(nombre, email, password);
 
         res.status(201).json({
             message: "usuario creado",
@@ -32,7 +32,7 @@ const login = async(req, res, next) => {
             throw new AppError("Email y password requeridos", 400);
         }
 
-        const {usuario, accessToken, refreshToken} = await authSerivice.login(email, password);
+        const {usuario, accessToken, refreshToken} = await authService.login(email, password);
 
         res.json({accessToken, refreshToken});
     } catch (error) {
@@ -48,9 +48,9 @@ const refresh = async (req, res, next) => {
             throw new AppError("Token invalido", 400);
         }
 
-        const {accessToken} = await authSerivice.refresh(refreshToken);
+        const {accessToken, refreshToken: newRefreshToken} = await authService.refresh(refreshToken);
 
-        res.json({accessToken, refreshToken});
+        res.json({accessToken, refreshToken: newRefreshToken});
     } catch (error) {
         next (error)
     }
@@ -64,7 +64,7 @@ const logout = async(req, res, next) => {
             throw new AppError("Token invalido", 400);
         }
 
-        await authSerivice.logout(refreshToken);
+        await authService.logout(refreshToken);
             res.json({ message:"Sesion cerrada "});
             
     } catch (error) {

@@ -24,7 +24,7 @@ const login = async (email, password) => {
     );
 
     if(result.rows.length === 0) {
-        throw new AppError("Credenciales invalidas", 400);
+        throw new AppError("Credenciales invalidas", 401);
     }
 
     const usuario = result.rows[0];
@@ -46,7 +46,7 @@ const login = async (email, password) => {
 };
 
 const refresh = async(refreshToken) => {
-    const payload = jwt.verify(refreshToken, process.env. JWT_REFRESH_SECRET);
+    const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
 
     const result = await pool.query(
         "SELECT * FROM refresh_tokens WHERE token = $1",
@@ -57,9 +57,16 @@ const refresh = async(refreshToken) => {
         throw new AppError("Token invalido", 401);
     }
 
-    const accessToken = generateAccessToken(payload);
+    const newAccessToken = generateAccessToken(payload);
+    const newRefreshToken = generateRefreshToken(payload);
 
-    return { accessToken };
+    await pool.query("DELETE FROM refresh_tokens WHERE token = $1", [refreshToken]);
+    await pool.query(
+        "INSERT INTO refresh_tokens (user_id, token) VALUES ($1, $2)",
+        [payload.id, newRefreshToken]
+    );
+
+    return { accessToken: newAccessToken, refreshToken: newRefreshToken };
 }
 
 const logout = async (refreshToken) => {
