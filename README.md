@@ -1,196 +1,226 @@
 
-API de Portafolio de Inversiones
+# Investment Portfolio API
 
-API REST para gestión de portafolios de inversión, con integración de precios en tiempo real de acciones y criptomonedas.
+REST API para gestionar portafolios de inversión con activos financieros reales. Permite registrar compras y ventas de acciones y criptomonedas, consultar precios en tiempo real y configurar alertas de precio automáticas.
 
-🔗 Deploy: https://portafolio-inversiones.onrender.com
+**Base URL:** `https://administracion-gimnasio-7f7r.onrender.com`
 
-––––––
+---
 
-## Descripción
+## Tecnologías
 
-Esta API permite a los usuarios:
+- **Node.js** + **Express 5**
+- **PostgreSQL** con `pg` (Pool)
+- **JWT** — access token (15min) + refresh token (7d) con rotación
+- **Zod** — validación de schemas con `.strict()`
+- **bcryptjs** — hashing de passwords
+- **Alpha Vantage API** — precios en tiempo real de acciones
+- **CoinGecko API** — precios en tiempo real de criptomonedas
+- **Jest** + **Supertest** — tests unitarios e integración
 
-* Gestionar múltiples portafolios de inversión
-* Registrar compras y ventas de activos
-* Consultar precios en tiempo real
-* Definir alertas de precio objetivo
-
-El sistema está diseñado con una arquitectura escalable y separada por responsabilidades, facilitando mantenimiento y evolución.
-
-––––––
-
-## Stack
-
-* Node.js + Express
-* PostgreSQL
-* JWT (access + refresh tokens)
-* Zod para validación de datos
-* Alpha Vantage API (acciones)
-* CoinGecko API (criptomonedas)
-
-––––––
-
-## Arquitectura
-
-La API sigue una arquitectura en capas:
-
-* Controllers → manejan request/response
-* Services → contienen la lógica de negocio
-* Validators → validación de datos
-* Middlewares → autenticación y validación
-
-Esto permite:
-
-* Separación clara de responsabilidades
-* Mayor mantenibilidad
-* Facilidad para testing
-* Escalabilidad del sistema
-
-––––––
-
-## Autenticación
-
-Se implementa autenticación basada en JWT:
-
-* Access Token → corta duración
-* Refresh Token → larga duración
-
-Flujo:
-
-1. Usuario se registra o inicia sesión
-2. Se generan access y refresh tokens
-3. El access token se usa para acceder a endpoints protegidos
-4. El refresh token permite renovar el access token
-5. El logout invalida el refresh token
-
-––––––
-
-## Seguridad
-
-* Autenticación con JWT
-* Validación de inputs con Zod
-* Manejo centralizado de errores
-* Separación de lógica de negocio y validación
-
-––––––
-
-## Manejo de errores
-
-Se implementa un sistema centralizado mediante una clase personalizada (AppError):
-
-* Respuestas consistentes
-* Mejor control de errores
-* Código más limpio y mantenible
-
-––––––
-
-## Características
-
-* Autenticación completa con refresh tokens y logout real
-* Gestión de múltiples portafolios por usuario
-* Registro de transacciones (compra/venta)
-* Actualización automática de posiciones
-* Integración con APIs externas de precios
-* Sistema de alertas por precio objetivo
-* Validación de datos en todos los endpoints
-
-––––––
-
-## Endpoints
-
-### Auth
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| POST | /auth/register | Registro |
-| POST | /auth/login | Login |
-| POST | /auth/refresh | Renovar token |
-| POST | /auth/logout | Logout |
-
-### Portafolios
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | /portafolios | Listar portafolios |
-| POST | /portafolios | Crear portafolio |
-| GET | /portafolios/:id | Ver portafolio |
-| PUT | /portafolios/:id | Editar portafolio |
-| DELETE | /portafolios/:id | Eliminar portafolio |
-
-### Activos
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | /activos | Catálogo de activos |
-| POST | /activos | Agregar activo |
-| GET | /activos/:simbolo/precio?tipo=accion | Precio en tiempo real |
-
-### Transacciones
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | /portafolios/:id/transacciones | Historial |
-| POST | /portafolios/:id/transacciones | Registrar compra/venta |
-| DELETE | /portafolios/:id/transacciones/:txId | Eliminar |
-
-### Alertas
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | /alertas | Listar alertas |
-| POST | /alertas | Crear alerta |
-| PUT | /alertas/:id | Editar alerta |
-| DELETE | /alertas/:id | Eliminar alerta |
-
-
-––––––
-
-## Variables de entorno
-
-Creá un archivo `.env` con estas variables:
-
-```
-DATABASE_URL=postgresql://localhost/portafolio_inversiones
-JWT_SECRET=tu_secret
-JWT_REFRESH_SECRET=tu_refresh_secret
-NODE_ENV=development
-PORT=3000
-ALPHA_VANTAGE_KEY=tu_key
-```
-
-⸻
-
-## Instalación local
-
-```bash
-git clone https://github.com/benjaminryderwismath/portafolio_inversiones.git
-cd portafolio_inversiones
-npm install
-npm run dev
-```
-––––––
+---
 
 ## Estructura del proyecto
 
 ```
 src/
-  config/       → configuración DB
-  controllers/  → requests/responses
-  middlewares/  → auth y validación
-  routes/       → endpoints
-  services/     → lógica de negocio
-  utils/        → helpers
-  validators/   → schemas
+├── config/         # Conexión a PostgreSQL
+├── controllers/    # Lógica de request/response
+├── middlewares/    # Auth, validateId, validación de schemas
+├── routes/         # Definición de endpoints
+├── services/       # Lógica de negocio y queries
+├── validators/     # Schemas Zod
+└── utils/          # AppError, JWT helpers, bcrypt helpers
 ```
 
+---
 
+## Instalación local
 
+```bash
+git clone https://github.com/tu-usuario/portafolio-inversiones.git
+cd portafolio-inversiones
+npm install
+```
 
+Copiá el archivo de variables de entorno:
 
+```bash
+cp .env.example .env
+```
 
+Completá los valores en `.env` y levantá el servidor:
 
+```bash
+npm run dev
+```
 
+---
 
+## Variables de entorno
 
+```env
+DATABASE_URL=
+JWT_SECRET=
+JWT_REFRESH_SECRET=
+NODE_ENV=development
+PORT=3000
+ALPHA_VANTAGE_KEY=
+```
 
+---
 
+## Autenticación
 
+Todos los endpoints excepto `/auth/register`, `/auth/login` y `/auth/refresh` requieren un **Bearer token** en el header:
 
+```
+Authorization: Bearer <accessToken>
+```
 
+El access token expira en 15 minutos. Usá `/auth/refresh` para obtener uno nuevo sin volver a loguearte. Cada refresh rota el token — el anterior queda inválido.
 
+---
+
+## Endpoints
+
+### Auth
+
+| Método | Endpoint | Descripción | Auth |
+|--------|----------|-------------|------|
+| POST | `/auth/register` | Registrar usuario | No |
+| POST | `/auth/login` | Iniciar sesión | No |
+| POST | `/auth/refresh` | Renovar access token | No |
+| POST | `/auth/logout` | Cerrar sesión | No |
+
+> `/auth/login` y `/auth/register` tienen rate limiting: máximo 10 intentos cada 15 minutos por IP.
+
+**POST /auth/register**
+```json
+{
+  "nombre": "Benji",
+  "email": "benji@inversiones.com",
+  "password": "tu_password"
+}
+```
+
+**POST /auth/login**
+```json
+{
+  "email": "benji@inversiones.com",
+  "password": "tu_password"
+}
+```
+Respuesta:
+```json
+{
+  "accessToken": "eyJ...",
+  "refreshToken": "eyJ..."
+}
+```
+
+---
+
+### Activos
+
+Los activos son globales — no pertenecen a ningún usuario en particular.
+
+| Método | Endpoint | Descripción | Auth |
+|--------|----------|-------------|------|
+| GET | `/activos` | Listar todos los activos | No |
+| GET | `/activos/:simbolo/precio` | Precio en tiempo real | No |
+| POST | `/activos` | Registrar un activo | Sí |
+
+**GET /activos/AAPL/precio** — Respuesta:
+```json
+{
+  "simbolo": "AAPL",
+  "precio": 189.45,
+  "cambio": "0.35%"
+}
+```
+
+**POST /activos**
+```json
+{
+  "nombre": "Apple Inc.",
+  "simbolo": "AAPL",
+  "tipo": "accion"
+}
+```
+> `tipo` acepta: `accion`, `crypto`.
+
+---
+
+### Portafolios
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/portafolios` | Listar portafolios del usuario |
+| GET | `/portafolios/:id` | Obtener un portafolio |
+| POST | `/portafolios` | Crear portafolio |
+| PUT | `/portafolios/:id` | Actualizar portafolio |
+| DELETE | `/portafolios/:id` | Eliminar portafolio |
+
+**POST /portafolios**
+```json
+{
+  "nombre": "Mi portafolio tech"
+}
+```
+
+---
+
+### Transacciones
+
+Las transacciones viven dentro de un portafolio. Registrar una transacción actualiza automáticamente la cantidad del activo en `portafolio_activos`. Eliminarla revierte el efecto.
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/portafolios/:id/transacciones` | Listar transacciones del portafolio |
+| POST | `/portafolios/:id/transacciones` | Registrar transacción |
+| DELETE | `/portafolios/:id/transacciones/:txId` | Eliminar transacción |
+
+**POST /portafolios/1/transacciones**
+```json
+{
+  "activo_id": 1,
+  "tipo": "compra",
+  "cantidad": 10,
+  "precio_unitario": 189.45
+}
+```
+> `tipo` acepta: `compra`, `venta`.
+
+---
+
+### Alertas
+
+Las alertas notifican cuando un activo supera o cae por debajo de un precio objetivo.
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/alertas` | Listar alertas del usuario |
+| POST | `/alertas` | Crear alerta |
+| PUT | `/alertas/:id` | Actualizar alerta |
+| DELETE | `/alertas/:id` | Eliminar alerta |
+
+**POST /alertas**
+```json
+{
+  "activo_id": 1,
+  "tipo": "precio_sube",
+  "precio_objetivo": 200.00
+}
+```
+> `tipo` acepta: `precio_sube`, `precio_baja`.
+
+---
+
+## Funcionalidades destacadas
+
+- **Precios en tiempo real** — consulta Alpha Vantage para acciones y CoinGecko para criptomonedas. Si la API externa falla, retorna un error 502 con mensaje descriptivo en vez de explotar.
+- **Transacciones atómicas** — toda operación que toca varias tablas usa `BEGIN/COMMIT/ROLLBACK`. Eliminar una transacción revierte su efecto en `portafolio_activos` dentro de la misma transacción DB.
+- **Ownership por usuario** — cada query filtra por `usuario_id`. Un usuario no puede ver ni modificar datos de otro.
+- **Refresh token rotation** — cada vez que se renueva el access token, el refresh token también se reemplaza.
+- **Rate limiting** — `/login` y `/register` limitan a 10 intentos por IP cada 15 minutos.
